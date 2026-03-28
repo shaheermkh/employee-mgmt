@@ -1,116 +1,90 @@
+import os
+import json
+import csv
+
+from crud.add import add_employee
+from crud.view import view_employees
+from crud.update import update_employee
+from crud.delete import delete_employee
+from crud.filter import filter_employees
+
+terminal_width = os.get_terminal_size().columns
 employees = []
+json_file = "data/employees.json"
+
+def load_data():
+    global employees
+    if os.path.exists(json_file):
+        with open(json_file, "r") as f:
+            employees = json.load(f)
+
+def save_data():
+    os.makedirs("data", exist_ok=True)
+    with open(json_file, "w") as f:
+        json.dump(employees, f, indent=4)
+  
+def export_to_csv(employees, filename="data/employees.csv"):
+    if not employees:
+        print("No employees to export.".center(terminal_width))
+        return
+
+    def get_emp_value(emp, key):
+        if isinstance(emp, dict):
+            return emp.get(key, "")
+        else:
+            return getattr(emp, key, "")
+
+    def format_salary(salary):
+        if isinstance(salary, (int, float)):
+            return f"${salary:,.2f}"
+        return salary
+
+    with open(filename, "w", newline="") as f:
+        writer = csv.writer(f, quoting=csv.QUOTE_ALL)
+        writer.writerow(["ID", "Name", "Department", "Role", "Salary"])
+        for emp in employees:
+            emp_id = get_emp_value(emp, "id")
+            name = get_emp_value(emp, "name")
+            department = get_emp_value(emp, "department")
+            role = get_emp_value(emp, "role")
+            salary = format_salary(get_emp_value(emp, "salary"))
+            writer.writerow([emp_id, name, department, role, salary])
+
+    print(f"Saved to {filename}")
 
 def main():
-  while True:
-    print("\nEmployee management system")
-    print("1: Show all employees")
-    print("2: Add employee")
-    print("3: Edit employee")
-    print("4: Delete employee")
-    print("5: Exit")
+    load_data()
+    print("Employee Management System".center(terminal_width))
 
-    choice = input("Pick 1-5: ")
+    while True:
+        print("─" * terminal_width)
+        print("1. Show all employees  2. Add employee  3. Edit employee  4. Delete employee  5. Filter employees  6. Export to CSV  7. Exit".center(terminal_width))
+        print("─" * terminal_width)
+        
+        prompt = "Pick 1-7: "
+        padding = " " * ((terminal_width - len(prompt)) // 2)
+        choice = input(padding + prompt)
 
-    if choice == '1':
-      view_employees()
-    elif choice == '2':
-      add_employee()
-    elif choice == '3':
-      update_employee()
-    elif choice == '4':
-      delete_employee()
-    elif choice == '5':
-      break
-    else:
-      print("Try again")
+        print("─" * terminal_width)
 
-def view_employees():
-  if not employees:
-    print("No employees available")
-    return
-
-  print("\nAll employees:")
-  for employee in employees:
-    print("-", employee['name'], "(id", employee['id'] + ")", "dept", employee['department'], "sal", employee['salary'])
-
-
-def add_employee():
-  name = input("Name: ")
-
-  while True:
-    employee_id = input("id (number): ")
-    if employee_id.isdigit():
-      break
-    print("Id must be a number")
-
-  department = input("Department: ")
-
-  while True:
-    salary = input("Salary (number): ")
-    if salary.count('.') <= 1:
-      formatted = salary.replace('.', '', 1)
-      is_valid = formatted.isdigit()
-    else:
-      is_valid = False
-
-    if is_valid:
-      break
-    print("Salary must be a number")
-
-  employees.append({
-    "name": name,
-    "id": employee_id,
-    "department": department,
-    "salary": salary
-  })
-
-  print("Employee added")
-
-def find_employee_by_id(employee_id):
-  for employee in employees:
-    if employee['id'] == employee_id:
-      return employee
-  return None
-
-def update_employee():
-  employee_id = input("Enter employee id to edit: ")
-  employee = find_employee_by_id(employee_id)
-  if not employee:
-    print("Employee not found")
-    return
-
-  print(employee)
-  new_name = input("Enter new name (Press enter to keep current): ")
-  if new_name:
-    employee['name'] = new_name
-
-  new_department = input("Enter new department name (Press enter to keep current): ")
-  if new_department:
-    employee['department'] = new_department
-
-  new_salary = input("Enter new salary (Press enter to keep current): ")
-  if new_salary:
-    if new_salary.count('.') <= 1:
-      formatted = new_salary.replace('.', '', 1)
-      is_valid = formatted.isdigit()
-    else:
-      is_valid = False
-
-    if is_valid:
-      employee['salary'] = new_salary
-    else:
-      print("Salary must be a number, change ignored")
-
-  print("Employee updated")
-
-def delete_employee():
-  employee_id = input("Enter id to remove: ")
-  employee = find_employee_by_id(employee_id)
-  if not employee:
-    print("Employee not found")
-    return
-
-  employees.remove(employee)
-  print("Employee removed")
+        if choice == '1':
+            view_employees(employees)
+        elif choice == '2':
+            add_employee(employees)
+            save_data()
+        elif choice == '3':
+            update_employee(employees)
+            save_data()
+        elif choice == '4':
+            delete_employee(employees)
+            save_data()
+        elif choice == '5':
+            filter_employees(employees)
+        elif choice == '6':
+            export_to_csv(employees)
+        elif choice == '7':
+            break
+        else:
+            print("Try again".center(terminal_width))
 
 main()
