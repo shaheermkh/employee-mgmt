@@ -8,4 +8,5 @@ def view_employees(employees):
 
   print("All employees:".center(terminal_width))
   for employee in employees:
-    print(f"- {employee['name']} (id {employee['id']}) dept {employee['department']} role {employee.get('role', '')} sal {employee['salary']}".center(terminal_width))
+    date_added = employee.get('date', 'N/A')
+    print(f"Date {date_added}- Name: {employee['name']} ID: {employee['id']} Dept: {employee['department']} Role: {employee.get('role', '')} Salary: {employee['salary']}".center(terminal_width))

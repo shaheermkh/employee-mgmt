@@ -7,7 +7,7 @@ def filter_employees(employees):
     return
 
   print("Filter by:".center(terminal_width))
-  print("1: Department  2. Role  3. Salary >=  4. Salary <=  5. Exact salary  6. Back".center(terminal_width))
+  print("1: Department  2. Role  3. Salary (Higher than)  4. Salary (Lower than)  5. Exact salary  6. Back".center(terminal_width))
   print("─" * terminal_width)
 
   prompt = "Pick 1-6: "
@@ -16,10 +16,10 @@ def filter_employees(employees):
   
   if choice == '1':
     dept = input("Department to filter: ".center(terminal_width))
-    filtered = [e for e in employees if e['department'].lower() == dept.lower()]
+    filtered = [e for e in employees if str(e['department']).lower() == dept.lower()]
   elif choice == '2':
     role = input("Role to filter: ".center(terminal_width))
-    filtered = [e for e in employees if e.get('role', '').lower() == role.lower()]
+    filtered = [e for e in employees if str(e.get('role', '')).lower() == role.lower()]
   elif choice == '3':
     val = input("Minimum salary: ".center(terminal_width))
     try:
@@ -51,6 +51,7 @@ def filter_employees(employees):
     print("No employees match filter".center(terminal_width))
     return
 
-  print("\nFiltered employees:".center(terminal_width))
+  print("Filtered employees:".center(terminal_width))
   for employee in filtered:
-    print(f"- {employee['name']} (id {employee['id']}) dept {employee['department']} role {employee.get('role', '')} sal {employee['salary']}".center(terminal_width))
+    date_added = employee.get('date', 'N/A')
+    print(f"Date {date_added}- Name: {employee['name']} ID: {employee['id']} Dept: {employee['department']} Role: {employee.get('role', '')} Salary: {employee['salary']}".center(terminal_width))

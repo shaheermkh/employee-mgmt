@@ -13,7 +13,9 @@ def update_employee(employees):
     print("Employee not found".center(terminal_width))
     return
 
-  print(employee.center(terminal_width))
+  date_added = employee.get('date', 'N/A')
+  emp_info = f"ID: {employee['id']}, Name: {employee['name']}, Dept: {employee['department']}, Role: {employee.get('role', '')}, Salary: {employee['salary']}, Date Added: {date_added}"
+  print(emp_info.center(terminal_width))
   prompt = "Enter new name (Press enter to keep current): "
   padding = " " * ((terminal_width - len(prompt)) // 2)
   new_name = input(padding + prompt)

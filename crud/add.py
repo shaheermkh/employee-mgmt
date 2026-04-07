@@ -1,7 +1,9 @@
 import os
 terminal_width = os.get_terminal_size().columns
 
-def add_employee(employees):
+from crud.export_to_csv import export_to_csv
+
+def add_employee(employees, date_added):
   while True:
     prompt = "Enter employee id (number): "
     padding = " " * ((terminal_width - len(prompt)) // 2)
@@ -40,6 +42,7 @@ def add_employee(employees):
     break
 
   employees.append({
+    "date": date_added,
     "name": name,
     "id": employee_id,
     "department": department,
@@ -48,3 +51,11 @@ def add_employee(employees):
   })
 
   print("Employee added".center(terminal_width))
+  print("─" * terminal_width)
+  
+  prompt = "Export to CSV? Y/N: "
+  padding = " " * ((terminal_width - len(prompt)) // 2)
+  choice = input(padding + prompt)
+
+  if choice in ('y', 'yes', 'Y', 'YES'):
+    export_to_csv(employees, date_added=date_added)
