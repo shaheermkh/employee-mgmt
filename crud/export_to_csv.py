@@ -3,6 +3,7 @@ import csv
 
 terminal_width = os.get_terminal_size().columns
 
+
 def export_to_csv(employees, filename="employees.csv", date_added=None):
     if not employees:
         print("No employees to export.".center(terminal_width))
